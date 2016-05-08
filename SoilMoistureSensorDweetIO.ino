@@ -1,10 +1,8 @@
-#include <Wire.h>
-#include <EEPROM.h>
 #include <ESP8266WiFi.h>
 
 #define moisturePin A0
-#define sensorPowerPin 4
-#define ledPin 14
+#define sensorPowerPin 4 // This is marked D2 on the ESP8266 development board
+#define ledPin 16
 
 const char* ssid = "-SSID-";
 const char* password = "-PASSWORD-";
@@ -96,8 +94,6 @@ void takeReading()
 {
   //Serial.println("Taking reading");
 
-  digitalWrite(ledPin, HIGH);
-
   sensorOn();
 
   int reading = analogRead(moisturePin);
@@ -108,8 +104,6 @@ void takeReading()
   currentReading = reading;
 
   sensorOff();
-  
-  digitalWrite(ledPin, LOW);
 
   Serial.println();
 }
@@ -125,15 +119,14 @@ void publishReading()
   int port = 80;
   String path = "/dweet/for/" + dweetId + "?moistureSensorReading=";
   path += currentReading;
-  Serial.println(path);
-  Serial.println();
+  
   // Attempt to connect to website
   if ( !getRequest(host, port, path) )
     Serial.println("GET request failed");
   else
   {
-    Serial.println("Finished publishing.");
     Serial.println();
+    Serial.println("Finished publishing.");
   }
   
   digitalWrite(ledPin, LOW);
